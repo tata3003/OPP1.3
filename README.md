@@ -1,79 +1,70 @@
+class Reviewer:
+    def __init__(self, name, surname):
+        self.name = name
+        self.surname = surname
+    
+    def __str__(self):
+        return f'Имя: {self.name}\nФамилия: {self.surname}'
+
+class Lecturer:
+    def __init__(self, name, surname):
+        self.name = name
+        self.surname = surname
+        self.grades = []
+    
+    def __str__(self):
+        average_grade = sum(self.grades) / len(self.grades)
+        return f'Имя: {self.name}\nФамилия: {self.surname}\nСредняя оценка за лекции: {average_grade:.1f}'
+
+    def __eq__(self, other):
+        return sum(self.grades) / len(self.grades) == sum(other.grades) / len(other.grades)
+
+    def __lt__(self, other):
+        return sum(self.grades) / len(self.grades) < sum(other.grades) / len(other.grades)
+
+    # Остальные операторы сравнения...
+
 class Student:
-    def __init__(self, name, surname, gender):
+    def __init__(self, name, surname):
         self.name = name
         self.surname = surname
-        self.gender = gender
-        self.finished_courses = []
+        self.grades = []
         self.courses_in_progress = []
-        self.grades = {}
+        self.finished_courses = []
+    
+    def __str__(self):
+        average_grade = sum(self.grades) / len(self.grades)
+        return f'Имя: {self.name}\nФамилия: {self.surname}\nСредняя оценка за домашние задания: {average_grade:.1f}\nКурсы в процессе изучения: {", ".join(self.courses_in_progress)}\nЗавершенные курсы: {", ".join(self.finished_courses)}'
 
-    def rate_lecture(self, lecturer, course, grade):
+    def rate_lecturer(self, lecturer, course, grade):
         if isinstance(lecturer, Lecturer) and course in lecturer.courses_attached and course in self.courses_in_progress:
-            if course in lecturer.grades:
-                lecturer.grades[course] += [grade]
-            else:
-                lecturer.grades[course] = [grade]
+            lecturer.grades.append(grade)
         else:
             return 'Ошибка'
 
-class Mentor:
-    def __init__(self, name, surname):
-        self.name = name
-        self.surname = surname
-        self.courses_attached = []
+    def __eq__(self, other):
+        return sum(self.grades) / len(self.grades) == sum(other.grades) / len(other.grades)
 
-    def rate_hw(self, student, course, grade):
-        if isinstance(student, Student) and course in self.courses_attached and course in student.courses_in_progress:
-            if course in student.grades:
-                student.grades[course] += [grade]
-            else:
-                student.grades[course] = [grade]
-        else:
-            return 'Ошибка'
+    def __lt__(self, other):
+        return sum(self.grades) / len(self.grades) < sum(other.grades) / len(other.grades)
 
-class Lecturer(Mentor):
-    def __init__(self, name, surname):
-        super().__init__(name, surname)
-        self.grades = {}
+    # Остальные операторы сравнения...
 
-    def average_grade(self):
-        sum_grades = 0
-        count_grades = 0
-        for grades_list in self.grades.values():
-            sum_grades += sum(grades_list)
-            count_grades += len(grades_list)
-        return sum_grades / count_grades if count_grades != 0 else 0
+# Пример использования:
 
-class Reviewer(Mentor):
-    def __init__(self, name, surname):
-        super().__init__(name, surname)
+# Создаем преподавателя
+some_lecturer = Lecturer('Some', 'Buddy')
 
-    def rate_hw(self, student, course, grade):
-        super().rate_hw(student, course, grade)
-
-# Пример использования классов:
-
-# Создаем лектора и студента
-lecturer = Lecturer('Иван', 'Иванов')
-student = Student('Петр', 'Петров', 'м')
-
-# Добавляем лектору курс
-lecturer.courses_attached.append('Python')
-
-# Добавляем студенту курс
-student.courses_in_progress.append('Python')
+# Создаем студента
+some_student = Student('Ruoy', 'Eman')
 
 # Выставляем оценку лектору
-student.rate_lecture(lecturer, 'Python', 8)
+some_student.rate_lecturer(some_lecturer, 'Python', 9)
+some_student.rate_lecturer(some_lecturer, 'Python', 10)
+some_student.rate_lecturer(some_lecturer, 'Python', 8)
 
-# Выводим оценку лектора
-print(f'Средняя оценка лектора {lecturer.name} {lecturer.surname}: {lecturer.average_grade()}')
-
-# Создаем ревьюера и выставляем оценку студенту
-reviewer = Reviewer('Алексей', 'Сидоров')
-reviewer.rate_hw(student, 'Python', 9)
-
-# Выводим оценки студента
-print(f'Оценки студента {student.name} {student.surname} по курсу {student.courses_in_progress[0]}: {student.grades}')
+# Выводим информацию о лекторе и студенте
+print(some_lecturer)
+print(some_student)
 
 
